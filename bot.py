@@ -1,11 +1,18 @@
-# Discord.py
+import json
+import re
 import discord
 from discord.ext import commands
+from twython import Twython
 
-# BeautifulSoup
-import urllib.request as urllib2
-from bs4 import BeautifulSoup
 
+# Load Twitter API keys from a local file
+with open("twitter_credentials.json", "r") as file:  
+    creds = json.load(file)
+
+# Access Twitter functions
+twitter = Twython(creds['CONSUMER_KEY'], creds['CONSUMER_SECRET'])
+
+# Define the prefix used to call commands (e.g. !tweet)
 prefix = "!"
 bot = commands.Bot(command_prefix=prefix)
 
@@ -24,50 +31,32 @@ async def on_message(message):
 	await bot.process_commands(message)
 
 
-# @bot.command()
-# async def ping(ctx):
-# 	'''
-# 	This text will be shown in the help command
-# 	'''
-
-# 	# Get the latency of the bot
-# 	latency = bot.latency  # Included in the Discord.py library
-# 	# Send it to the user
-# 	await ctx.send("Pong! " + str(latency))
-
-
 @bot.command()
 async def tweet(ctx, arg):
 	'''
-	Posts all images found within a tweet as Discord doesn't show more than 1 in embeds
-	
-	TODO: threads break this as the function only retrieves the images of the first
-	image div it finds on the web page, rather than the image div of the specific tweet
+	Posts all images found within a tweet as Discord doesn't show more than 1 in embed
+	arg -> the tweet as argument
 	'''
 
 	if len(arg) > 0 and arg.startswith("https://twitter.com/"):
-		images = []
 		try:
-			# Access the tweet and get its DOM
-			target = urllib2.urlopen(arg)
-			soup = BeautifulSoup(target, "lxml")
+			# Get the tweet's ID, and then extract its media
+			find_id_regex = re.compile('(?:status\\/)(.*)')
+			
+			tweet_id = find_id_regex.search(arg)
 
-			# Find the div containing the images and retrieve them
-			content = soup.find("div", class_="AdaptiveMedia")
-			images = content.findAll("img")
-
-			# Send each image URL source as a message
-			# if more than 1 was found
-			if(len(images) > 1):
-				# Skip the first since it's already in the embed...?
-				for image in images[1:]:
-					# print(image['src'])
-					await ctx.send(image['src'])
+			tweet = twitter.show_status(id=tweet_id.group(1))
+			media = tweet['extended_entities']['media']
+			
+			# Send each media URL as a message if more than 1 was found
+			if(len(media) > 1):
+				for element in media[1:]:
+					await ctx.send(element['media_url_https'])
 		except:
 			await ctx.send("Something went wrong - did you supply a valid tweet URL?")
 	else:
 		await ctx.send("Usage: !tweet https://twitter.com/<username>/status/<tweetid>")
 
 
-token = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+token = "MjI1NjM0NzA3MzEwNjQxMTUy.XPgzzg.4gc_HBHiYd6i48nsjNsQW5TVyow"
 bot.run(token)

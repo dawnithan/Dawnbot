@@ -4,7 +4,6 @@ import discord
 from discord.ext import commands
 from twython import Twython
 
-
 # Load Twitter API keys from a local file
 with open("twitter_credentials.json", "r") as file:  
     creds = json.load(file)
@@ -58,5 +57,5 @@ async def tweet(ctx, arg):
 		await ctx.send("Usage: !tweet https://twitter.com/<username>/status/<tweetid>")
 
 
-token = "MjI1NjM0NzA3MzEwNjQxMTUy.XPgzzg.4gc_HBHiYd6i48nsjNsQW5TVyow"
+token = "XXXXX"
 bot.run(token)

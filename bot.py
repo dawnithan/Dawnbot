@@ -36,7 +36,7 @@ async def tweet(ctx, arg):
 	Posts all images found within a tweet as Discord doesn't show more than 1 in embed
 	arg -> the tweet as argument
 	'''
-
+	msg = "Other images in tweet: "
 	if len(arg) > 0 and arg.startswith("https://twitter.com/"):
 		try:
 			# Get the tweet's ID, and then extract its media
@@ -44,18 +44,18 @@ async def tweet(ctx, arg):
 			
 			tweet_id = find_id_regex.search(arg)
 
-			tweet = twitter.show_status(id=tweet_id.group(1))
+			tweet = twitter.show_status(id=tweet_id.group(1), tweet_mode="extended")
 			media = tweet['extended_entities']['media']
 			
 			# Send each media URL as a message if more than 1 was found
 			if(len(media) > 1):
 				for element in media[1:]:
-					await ctx.send(element['media_url_https'])
+					msg += element['media_url_https'] + " "
+				await ctx.send(msg)
 		except:
 			await ctx.send("Something went wrong - did you supply a valid tweet URL?")
 	else:
 		await ctx.send("Usage: !tweet https://twitter.com/<username>/status/<tweetid>")
-
 
 token = "XXXXX"
 bot.run(token)

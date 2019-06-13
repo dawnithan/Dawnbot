@@ -4,12 +4,12 @@ import discord
 from discord.ext import commands
 from twython import Twython
 
-# Load Twitter API keys from a local file
-with open("twitter_credentials.json", "r") as file:  
-    creds = json.load(file)
+bot_token = str(os.environ.get('BOT_TOKEN'))
+consumer_key = str(os.environ.get('CONSUMER_KEY'))
+consumer_secret = str(os.environ.get('CONSUMER_SECRET'))
 
 # Access Twitter functions
-twitter = Twython(creds['CONSUMER_KEY'], creds['CONSUMER_SECRET'])
+twitter = Twython(consumer_key, consumer_secret)
 
 # Define the prefix used to call commands (e.g. !tweet)
 prefix = "!"
@@ -57,5 +57,5 @@ async def tweet(ctx, arg):
 	else:
 		await ctx.send("Usage: !tweet https://twitter.com/<username>/status/<tweetid>")
 
-token = "XXXXX"
+token = BOT_TOKEN
 bot.run(token)

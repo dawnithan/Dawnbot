@@ -1,5 +1,6 @@
 import json
 import re
+import os
 import discord
 from discord.ext import commands
 from twython import Twython

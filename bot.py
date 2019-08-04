@@ -1,3 +1,4 @@
+#! /usr/bin/python3
 import json
 import re
 import discord
@@ -56,6 +57,34 @@ async def tweet(ctx, arg):
 			await ctx.send("Something went wrong - did you supply a valid tweet URL?")
 	else:
 		await ctx.send("Usage: !tweet https://twitter.com/<username>/status/<tweetid>")
+
+@bot.command()
+async def quote(ctx, arg):
+	'''
+	Posts the quoted tweet within a tweet as a chat message
+	arg -> the tweet as argument
+	'''
+	msg = "**Quote tweet:** "
+	if len(arg) > 0 and arg.startswith("https://twitter.com/"):
+		try:
+			find_id_regex = re.compile('(?:status\\/)(.*)')
+			
+			tweet_id = find_id_regex.search(arg)
+
+			tweet = twitter.show_status(id=tweet_id.group(1), tweet_mode="extended")
+			
+			# quote_text = tweet['quoted_status']['full_text']
+			quote_tweet = tweet['quoted_status_permalink']['expanded']
+
+			if(len(quote_tweet) > 0):
+				msg += quote_tweet
+				await ctx.send(msg)
+			else:
+				await ctx.send("No quote content found.")
+		except:
+			await ctx.send("Something went wrong - did you supply a valid tweet URL or quote tweet?")
+	else:
+		await ctx.send("Usage: !quote https://twitter.com/<username>/status/<tweetid>")
 
 token = "XXXXX"
 bot.run(token)

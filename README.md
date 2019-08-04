@@ -1,6 +1,6 @@
 # Dawnbot
 
-Simple Discord bot built mostly for fun, that handles provides a couple of commands:
+Simple Discord bot built mostly for fun, that provides a couple of commands:
 
 * !tweet returns the URL(s) of a given tweet's hidden images in the current message channel. This is to circumvent the current design of Discord's embedded tweets, which only display 1 image even if the tweet contains multiple images.
 
